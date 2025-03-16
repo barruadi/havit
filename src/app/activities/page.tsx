@@ -1,7 +1,5 @@
-import Link from "next/link";
-import ActivityBox from "./_components/activityBox";
+import ActivityBox from "../_components/activityBox";
 
-import { LatestPost } from "~/app/_components/post";
 import { auth } from "~/server/auth";
 import { api, HydrateClient } from "~/trpc/server";
 
