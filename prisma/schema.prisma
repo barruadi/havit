@@ -8,60 +8,63 @@ datasource db {
 }
 
 model User {
-  id            Int       @id @default(autoincrement())
-  name          String
-  email         String    @unique
-  username      String
-  birthdate     DateTime?
-  password      String
-  coin          Int?
-  picture       Bytes
+  id        Int       @id @default(autoincrement())
+  name      String
+  email     String    @unique
+  username  String
+  birthdate DateTime?
+  password  String    @unique
+  coin      Int?
+  picture   String
 }
 
 model Activity {
-  username      String    @unique
-  email         String    @unique
-  activityName  String
-  status        String
-  coin          Int
-  habitName     String
-  activityPicture Bytes         
+  id              String  @id @default(uuid())  // Add an ID
+  username        String @unique
+  email           String @unique
+  activityName    String
+  date            DateTime
+  status          String
+  coin            Int
+  habitName       String
+  activityPicture String
+  @@unique([username, email, date, activityName])
 }
+
 
 model KondisiMental {
-  username        String    @unique
-  email           String    @unique
-  date            DateTime
-  depression      Float
-  anxiety         Float
-  stress          Float
-  result          String
+  username   String   @unique
+  email      String   @unique
+  date       DateTime
+  depression Float
+  anxiety    Float
+  stress     Float
+  result     String
 }
 
-
 model Habit {
-  username        String    @unique
-  email           String    @unique
-  habitName       String
-  status          String
+  username  String @unique
+  email     String @unique
+  habitName String
+  status    String
 }
 
 model KondisiGizi {
-  username        String    @unique
-  email           String    @unique
-  date            DateTime
-  carbohydrate    Float
-  protein         Float
-  fat             Float
-  vitamin         Float
-  calorie         Float
+  username     String   @unique
+  email        String   @unique
+  date         DateTime
+  carbohydrate Float
+  protein      Float
+  fat          Float
+  vitamin      Float
+  calorie      Float
 }
 
 model PopQuiz {
-  question        String    @unique
-  option1        String
-  option2        String
-  option3        String
-  option4        String
-  answer         String
+  question String @unique
+  option1  String
+  option2  String
+  option3  String
+  option4  String
+  answer   String
 }
