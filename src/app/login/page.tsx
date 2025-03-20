@@ -3,7 +3,6 @@
 import Textbox from "../_components/textbox"
 import Button from "../_components/button";
 
-import twitterlogo from "public/twitter.svg"
 
 import { FormEvent, useState } from "react"
 
