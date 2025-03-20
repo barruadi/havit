@@ -7,6 +7,8 @@ import twitterlogo from "public/twitter.svg"
 
 import { FormEvent, useState } from "react"
 
+import { useSession, signIn, signOut } from "next-auth/react";
+
 function LogIn() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -64,9 +66,11 @@ function LogIn() {
 
             {/* other method */}
             <div className="flex items-center gap-4 py-4">
-                <div className="p-3 bg-[#83CCAB] rounded-[14px]">
-                    <img src="/twitter.svg" alt="twitter" />
-                </div>
+                <button 
+                    onClick={() => signIn("google")}
+                    className="p-3 bg-[#83CCAB] rounded-[14px]">
+                        sign in with google
+                </button>
                 <div className="p-3 bg-[#83CCAB] rounded-[14px]">
                     <img src="/twitter.svg" alt="twitter" />
                 </div>
