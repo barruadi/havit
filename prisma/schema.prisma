@@ -16,10 +16,11 @@ model User {
   password  String    @unique
   coin      Int?
   picture   String
+  @@unique([name, username, password, email])  // Composite unique key
 }
 
 model Activity {
-  id              String  @id @default(uuid())  // Add an ID
+  id              Int  @id @default(autoincrement())  // Add an ID
   username        String @unique
   email           String @unique
   activityName    String
