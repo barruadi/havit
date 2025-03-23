@@ -1,6 +1,9 @@
 'use client';
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+// import { useSession } from "next-auth/react"; ini untuk tau session user
 import ActivityBox from "../_components/activityBox";
+import { useRouter } from "next/navigation";
+import Link from "next/link"
 
 const fetchActivities = async (page: number) => {
   // data dummy
@@ -26,22 +29,52 @@ const fetchActivities = async (page: number) => {
   return activities.slice(startIndex, endIndex);
 };
 
-export default function Home() {
+export default function Activities() {
   const [activities, setActivities] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const router = useRouter();
+
+  const username = "test";
+
+  const fetchActivities = useCallback(async () => {
+		if (username) {
+			try {
+				const response = await fetch(
+					`/api/activities/get?username=${username}`
+				);
+				const activityData = await response.json();
+				if (response.ok) {
+					setActivities(activityData.records);
+				} else {
+					console.error(
+						"Failed to fetch sleep history:",
+						activityData.message
+					);
+				}
+			} catch (error) {
+				console.error("Error fetching sleep history:", error);
+			}
+		}
+	}, [username]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const fetchedActivities = await fetchActivities(currentPage);
-      setActivities(fetchedActivities);
-
-      // 13: total data dummy, nnt cari length dr data
-      setTotalPages(Math.ceil(13 / 7)); 
-    };
-
-    fetchData();
+    fetchActivities();
   }, [currentPage]);
+
+  useEffect(() => {
+    setTotalPages(Math.ceil(activities.length / 7));
+  }, [activities]);
+
+  const handleActivityClick = (activityId: string) => {
+    showAlert(activityId);
+    console.log("Clicked activity with ID:", activityId);
+    router.push(`/activities/${activityId}`);
+  };
+
+  const showAlert = (id: string) => {
+    alert("Clicked activity with ID:" + id);
+  };
 
   const handleNextPage = () => {
     if (currentPage < totalPages) {
@@ -62,12 +95,14 @@ export default function Home() {
       </div>
 
       <div>
-        {activities.map((activity, index) => (
+        {activities.map((activity) => (
+        <a key={activity.id} onClick={() => handleActivityClick(activity.id)}>
           <ActivityBox
-            key={index}
-            activity={activity.activity}
+            activity={activity.activityName}
             date={activity.date}
+            coin={activity.coin}
           />
+          </a>
         ))}
       </div>
 
