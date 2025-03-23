@@ -9,13 +9,13 @@ datasource db {
 
 model User {
   id            Int       @id @default(autoincrement())
-  name          String
   email         String    @unique
-  username      String
-  birthdate     DateTime?
+  username      String    @unique
   password      String
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  image         String?
   coin          Int?
-  picture       Bytes
 }
 
 model Activity {
@@ -49,8 +49,8 @@ model Habit {
 }
 
 model KondisiGizi {
-  username        String    @unique
-  email           String    @unique
+  username        String    
+  email           String    
   date            DateTime
   carbohydrate    Float
   protein         Float
