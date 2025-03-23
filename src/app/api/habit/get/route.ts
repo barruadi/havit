@@ -5,8 +5,13 @@ import { NextResponse } from "next/server";
 
 export async function GET(req : Request) {
     try {
-        const body = await req.json();
-        const habits = await prisma.habit.findMany();
+        const habits = await prisma.habit.findUnique({
+            where : {
+                id : 5,
+                username : "user1",
+                email : "user1@email.com"
+            }
+        });
         return NextResponse.json( { habits, getStatus : "Success" }, { status : 200 })
         
     } catch (error) {

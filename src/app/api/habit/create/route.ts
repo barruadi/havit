@@ -15,6 +15,8 @@ export async function POST(req : Request) {
                 status : body.status
             },
         });
+
+        return NextResponse.json(habit, {status : 200});
         
     } catch (error) {
         console.error(error);

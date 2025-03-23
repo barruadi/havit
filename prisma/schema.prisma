@@ -45,8 +45,9 @@ model KondisiMental {
 }
 
 model Habit {
-  username  String @unique
-  email     String @unique
+  id         Int      @id @default(autoincrement())
+  username  String 
+  email     String 
   habitName String
   status    String
 }
