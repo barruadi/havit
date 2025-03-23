@@ -1,58 +1,43 @@
 "use client"
 
 import Textbox from "../_components/textbox"
-import Button from "../_components/button";
-
-import twitterlogo from "public/twitter.svg"
 
 import { FormEvent, useState } from "react"
 
-function SignUp() {
-    const [username, setUsername] = useState("");
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
+
+function LogIn() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const router = useRouter();
     
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        console.log(username, email, password);
-
-        // fetch API
-        const response = await fetch("/api/users/create", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                username,
-                email,
-                password,
-            }),
-        })
-        
-        if (response.ok) {
-            console.log("success");
+        const signInData = await signIn("credentials", {
+            email: email,
+            password: password,
+            redirect: false,
+        });
+        if (signInData?.error) {
+            console.log(signInData.error);
         } else {
-            console.log("failed");
+            console.log("success");
+            // router.push("/dashboard");
         }
     }
-  
+
     return (
         <div className="flex min-h-screen flex-col items-center justify-center">
             <div className="text-3xl text-[#21577A] font-bold mb-4">
-                Daftar
+                Masuk
             </div>
             <div className="text-[#4A848F] mb-6">
-                Buat akun baru
+                Halo Lagi
             </div>
             
             {/* form submission */}
             <form onSubmit={handleSubmit} className="w-full flex flex-col items-center gap-6 justify-center">
-                <Textbox
-                    placeholder="Nama"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                    />
-
                 <Textbox
                     placeholder="Email"
                     value={email}
@@ -68,9 +53,9 @@ function SignUp() {
                 <div className="w-full text-center px-6">
                     <button
                         type="submit"
-                        className="w-full bg-[#21577A] text-white p-3 rounded-[14px]"
+                        className="w-full bg-[#83CCAB] p-3 rounded-[14px]"
                     >
-                        Daftar
+                        Masuk
                     </button>
                 </div>
 
@@ -82,9 +67,11 @@ function SignUp() {
 
             {/* other method */}
             <div className="flex items-center gap-4 py-4">
-                <div className="p-3 bg-[#83CCAB] rounded-[14px]">
-                    <img src="/twitter.svg" alt="twitter" />
-                </div>
+                <button 
+                    onClick={() => signIn("google")}
+                    className="p-3 bg-[#83CCAB] rounded-[14px]">
+                        sign in with google
+                </button>
                 <div className="p-3 bg-[#83CCAB] rounded-[14px]">
                     <img src="/twitter.svg" alt="twitter" />
                 </div>
@@ -95,12 +82,12 @@ function SignUp() {
 
             <div className="flex flex-col text-sm">
                 <div className="text-[#4A848F]"> 
-                    Sudah punya akun?
-                    <a href="/signin" className="text-[#21577A] font-bold underline">Masuk</a>
+                    Belum punya akun?  
+                    <a href="/signup" className="text-[#21577A] font-bold underline">Daftar</a>
                 </div>
             </div>
         </div>
     );
 }
 
-export default SignUp;
+export default LogIn
