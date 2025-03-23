@@ -1,7 +1,8 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { type DefaultSession, type NextAuthConfig } from "next-auth";
-import DiscordProvider from "next-auth/providers/discord";
-import GoogleProvider from "next-auth/providers/google";
+import { compare } from "bcrypt";
+
+import { type DefaultSession, NextAuthConfig } from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
 
 import { db } from "~/server/db";
 
@@ -15,8 +16,8 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
-      // ...other properties
-      // role: UserRole;
+      username: string;
+      email: string;
     } & DefaultSession["user"];
   }
 
@@ -26,36 +27,57 @@ declare module "next-auth" {
   // }
 }
 
-/**
- * Options for NextAuth.js used to configure adapters, providers, callbacks, etc.
- *
- * @see https://next-auth.js.org/configuration/options
- */
 export const authConfig = {
-  providers: [
-    DiscordProvider,
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-    }),
-    /**
-     * ...add more providers here.
-     *
-     * Most other providers require a bit more work than the Discord provider. For example, the
-     * GitHub provider requires you to add the `refresh_token_expires_in` field to the Account
-     * model. Refer to the NextAuth.js docs for the provider you want to use. Example:
-     *
-     * @see https://next-auth.js.org/providers/github
-     */
-  ],
-  adapter: PrismaAdapter(db),
-  callbacks: {
-    session: ({ session, user }) => ({
-      ...session,
-      user: {
-        ...session.user,
-        id: user.id,
-      },
-    }),
+  pages: {
+    signIn: '/signin',
   },
+
+  // adapter
+  adapter: PrismaAdapter(db),
+
+  // session
+  session: {
+    strategy: "jwt",
+  },
+
+  // providers
+  providers: [
+    CredentialsProvider({
+      name: "Credentials",
+      
+      credentials: {
+        email: { label: "Email", type: "email", placeholder: "john@mail.com" },
+        password: { label: "Password", type: "password" }
+      },
+
+      async authorize(credentials) {
+        if (!credentials?.email || !credentials?.password) {
+          return null;
+        } 
+        const existingUser = await db.user.findUnique({
+          where: { email: credentials?.email as string },
+        });
+        if (!existingUser) {
+          return null;
+        }
+
+        const passwordMatch = await compare(
+          credentials?.password as string,
+          existingUser.password
+        )
+        if (!passwordMatch) {
+          return null;
+        }
+
+        return {
+          id: `${existingUser.id}`,
+          username: existingUser.username,
+          email: existingUser.email,
+        }
+      }
+    })
+  ],
+
+  // secret: process.env.AUTH_SECRET,
+
 } satisfies NextAuthConfig;
