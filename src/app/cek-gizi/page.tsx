@@ -1,32 +1,81 @@
 "use client"
 
-// import components
-import BahanMakanan from "./BahanMakanan"
-import Button from "../_components/button";
+import { model } from "../api/gemini/route";
+
+import { useSession } from "next-auth/react";
 
 import { use, useState } from "react"
+import React from "react"
 
 function CekGizi() {
 
+    const { data: session, status } = useSession();
+
     const [inputGizi, setInputGizi] = useState("");
-    const [listBahan, setListBahan] = useState<string[]>([]);
-
-    const handleProcess = (e: FormData) => {
-        console.log(inputGizi);
-
-        // fetch AI
-
-        // add to list
-        setListBahan([]);
-
+    
+    type GiziType = {
+        Kalori: number;
+        Protein: number;
+        Lemak: number;
+        Karbohidrat: number;
+        Vitamin: string[];
     }
-
-    const handleSubmit = (e: FormData) => {
-
-
+    
+    const [gizi, setGizi] = useState<GiziType>({
+        Kalori: 0,
+        Protein: 0,
+        Lemak: 0,
+        Karbohidrat: 0,
+        Vitamin: []
+    });
+    
+    const handleProcess = async (e: React.MouseEvent<HTMLButtonElement>) => {
+        e.preventDefault();
+        console.log(inputGizi);
         
-        // clear input
-        setInputGizi("");
+        // fetch AI
+        const prompt = `List estimasi gizi makanan dari menu berikut: ${inputGizi} with this JSON schema
+        
+        Gizi = {'Kalori': int, 'Protein': int, 'Lemak': int, 'Karbohidrat': int, 'Vitamin': [str]}
+        Return: Array<Gizi>;
+        `;
+
+        const result = await model.generateContent(prompt);
+        console.log(JSON.parse(result.response.text()));
+        const json_result = JSON.parse(result.response.text())
+        
+        // add to list
+        setGizi({
+            Kalori: json_result[0].Kalori,
+            Protein: json_result[0].Protein,
+            Lemak: json_result[0].Lemak,
+            Karbohidrat: json_result[0].Karbohidrat,
+            Vitamin: json_result[0].Vitamin
+        });
+
+        const username = session?.user?.username || "guest";
+        const email = session?.user?.email || "guest@mail.com";
+        
+        // POST method
+        const response = await fetch("/api/nutrition-condition/create", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: username,
+                email: email,
+                date: new Date(),
+                carbohydrate: json_result[0].Karbohidrat,
+                protein: json_result[0].Protein,
+                fat: json_result[0].Lemak,
+                vitamin: json_result[0].Vitamin,
+                calorie: json_result[0].Kalori
+            })
+        })
+        
+        const responseData = await response.json();
+        console.log("Response:", responseData);
     }
 
     return (
@@ -36,42 +85,24 @@ function CekGizi() {
             </div>
             {/* inputnya */}
             <div className="mx-5">
-                <textarea 
-                    value={inputGizi}
-                    onChange={(e) => setInputGizi(e.target.value)}
-                    className="py-3 w-full px-6 rounded-[14px] 
-                bg-[#83CCAB] text-white border border-[#83CCAB]
-                overflow-hidden placeholder:text-gray-300"
-                    placeholder="Masukkan makanan"
-                />
-            </div>
-
-            {/* List bahan makanan */}
-            <div className="px-6 py-2 flex flex-wrap gap-4">
-                <BahanMakanan
-                    bahan="Nasi Putih"
-                />
-                <BahanMakanan
-                    bahan="Ayam Goreng"
-                />
-                <BahanMakanan
-                    bahan="Nasi"
-                />
-                <BahanMakanan
-                    bahan="Putih"
-                />
-                <BahanMakanan
-                    bahan="Ayam"
-                />
-            </div>
-
-            {/* submit button */}
-            <div className="w-full text-center px-6 py-2">    
-                <Button
-                    text="selesai"
-                    goto="/list-gizi"
-                    className="w-full text-white"
-                />
+                <form action="">
+                    <textarea 
+                        value={inputGizi}
+                        onChange={(e) => setInputGizi(e.target.value)}
+                        className="py-3 w-full px-6 rounded-[14px] 
+                        bg-[#83CCAB] text-white border border-[#83CCAB]
+                        overflow-hidden placeholder:text-gray-300"
+                        placeholder="Masukkan makanan"
+                    />
+                    
+                    <div className="w-full text-center px-6 py-2">
+                        <button
+                            onClick={handleProcess}
+                            className="w-full bg-[#21577A] p-3 rounded-[14px] text-white">
+                                Submit
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     )
