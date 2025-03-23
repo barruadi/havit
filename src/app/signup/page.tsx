@@ -7,40 +7,16 @@ import Button from "../_components/button";
 import { FormEvent, useState } from "react"
 
 function SignUp() {
-    const [name, setName] = useState("");
+    const [username, setUsername] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     
-    const handleSubmit = async (e: FormEvent) => {
+    const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        console.log({ name, email, password });
-    
-        const body = { name, email, password, username: name, birthdate: null, coin: null, picture: "https://example.com/pic.jpg" };
-    
-        try {
-            const res = await fetch('http://localhost:3000/api/users/create', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(body),
-            });
-    
-            console.log("Response Status:", res.status);
-    
-            // Log full response before trying to parse JSON
-            const textResponse = await res.text();
-            console.log("Raw Response:", textResponse);
-    
-            if (!res.ok) {
-                throw new Error(textResponse || "Failed to create user");
-            }
-    
-            const data = JSON.parse(textResponse);
-            console.log("User created successfully:", data);
-        } catch (error) {
-            console.error("Fail adding user", error);
-        }
-    };
-    
+        console.log(name, email, password);
+
+        // fetch API
+    }
   
     return (
         <div className="flex min-h-screen flex-col items-center justify-center">
@@ -55,8 +31,8 @@ function SignUp() {
             <form className="w-full flex flex-col items-center gap-6 justify-center">
                 <Textbox
                     placeholder="Nama"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
                     />
 
                 <Textbox
@@ -71,10 +47,10 @@ function SignUp() {
                     onChange={(e) => setPassword(e.target.value)}
                     />
 
-                <div className="w-full text-center px-6" onClick={handleSubmit}>
+                <div className="w-full text-center px-6">
                     <Button
                         text="daftar"
-                        goto="/login"
+                        goto="/sigin"
                         className="w-full text-white font-bold"
                     />
                 </div>

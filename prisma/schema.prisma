@@ -51,14 +51,14 @@ model Habit {
 }
 
 model KondisiGizi {
-  username     String   @unique
-  email        String   @unique
-  date         DateTime
-  carbohydrate Float
-  protein      Float
-  fat          Float
-  vitamin      Float
-  calorie      Float
+  username        String    @unique
+  email           String    @unique
+  date            DateTime
+  carbohydrate    Float
+  protein         Float
+  fat             Float
+  vitamin         Float
+  calorie         Float
 }
 
 model PopQuiz {

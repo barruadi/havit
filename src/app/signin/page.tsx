@@ -1,25 +1,32 @@
 "use client"
 
 import Textbox from "../_components/textbox"
-import Button from "../_components/button";
-
 
 import { FormEvent, useState } from "react"
 
-import { useSession, signIn, signOut } from "next-auth/react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 function LogIn() {
-    const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const router = useRouter();
     
-    const handleSubmit = (e: FormEvent) => {
+    const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();
-        console.log(name, email, password);
-
-        // fetch API
+        const signInData = await signIn("credentials", {
+            email: email,
+            password: password,
+            redirect: false,
+        });
+        if (signInData?.error) {
+            console.log(signInData.error);
+        } else {
+            console.log("success");
+            // router.push("/dashboard");
+        }
     }
-  
+
     return (
         <div className="flex min-h-screen flex-col items-center justify-center">
             <div className="text-3xl text-[#21577A] font-bold mb-4">
@@ -31,12 +38,6 @@ function LogIn() {
             
             {/* form submission */}
             <form onSubmit={handleSubmit} className="w-full flex flex-col items-center gap-6 justify-center">
-                <Textbox
-                    placeholder="Nama"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    />
-
                 <Textbox
                     placeholder="Email"
                     value={email}
@@ -50,11 +51,12 @@ function LogIn() {
                     />
 
                 <div className="w-full text-center px-6">
-                    <Button
-                        text="masuk"
-                        goto="/dashboard"
-                        className="w-full text-white font-bold"
-                    />
+                    <button
+                        type="submit"
+                        className="w-full bg-[#83CCAB] p-3 rounded-[14px]"
+                    >
+                        Masuk
+                    </button>
                 </div>
 
             </form>
