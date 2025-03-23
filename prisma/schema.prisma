@@ -16,22 +16,23 @@ model User {
   password  String    @unique
   coin      Int?
   picture   String
-  @@unique([name, username, password, email])  // Composite unique key
+
+  @@unique([name, username, password, email])
 }
 
 model Activity {
-  id              Int  @id @default(autoincrement())  // Add an ID
-  username        String @unique
-  email           String @unique
+  username        String
+  email           String
   activityName    String
-  date            DateTime
   status          String
   coin            Int
   habitName       String
   activityPicture String
+  date            DateTime
+  id              Int      @id @default(autoincrement())
+
   @@unique([username, email, date, activityName])
 }
-
 
 model KondisiMental {
   username   String   @unique
@@ -51,14 +52,14 @@ model Habit {
 }
 
 model KondisiGizi {
-  username        String    @unique
-  email           String    @unique
-  date            DateTime
-  carbohydrate    Float
-  protein         Float
-  fat             Float
-  vitamin         Float
-  calorie         Float
+  username     String   @unique
+  email        String   @unique
+  date         DateTime
+  carbohydrate Float
+  protein      Float
+  fat          Float
+  vitamin      Float
+  calorie      Float
 }
 
 model PopQuiz {

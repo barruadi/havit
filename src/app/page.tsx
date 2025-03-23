@@ -1,38 +1,88 @@
-// 'use client';
+"use client"; 
 
+import { act, useEffect, useState } from "react";
+import { Chart as ChartJS, ArcElement, Tooltip, Legend } from "chart.js";
+import { Pie } from "react-chartjs-2";
 import { profile } from "console";
 import ArrowBack from "../../public/Arrow left.png"
 import Profile from "../../public/profile.png"
-import { Prisma } from "@prisma/client";
+import TambahHobiIcon from "../../public/Plus square.png"
+import CekMentalHarianIcon from "../../public/Heart.png"
+import LeaderboardIcon from "../../public/Bar chart-2.png"
+import PopQuizIcon from "../../public/Airplay.png"
+import Coin from "../../public/coin.png"
+import OrnamentTop from "../../public/Vector 7.png"
+import OrnamentBottom from "../../public/Vector 6.png"
 import Image from "next/image";
 import { prisma } from "lib/prisma";
 
-export default async function Home() {
+ChartJS.register(ArcElement, Tooltip, Legend);
 
-  // get username of user
-  const userData = await prisma.user.findUnique({
-    where : {
-      username : "user1",
-      email: "user1@example.com",
-    },
-  })
+export default function Home() {
+  const [chartData, setChartData] = useState<{ labels: string[]; datasets: any[] } | null>(null);
+  const [userData, setUserData] = useState<{id : Number, name : string, email : string, username : string, birthdate : Date, password : string, coin : Number, picture : string} | null>(null);
+  const [activityData, setActivityData] = useState<{
+    id: number;
+    username: string;
+    email: string;
+    activityName: string;
+    date: Date;
+    status: string;
+    coin: number;
+    habitName: string;
+    activityPicture: string;
+  } | null>(null);
 
-  // get the nutrition data of uesr
-  const nutritionData = await prisma.kondisiGizi.findUnique({
-    where : {
-      username : "user1",
-      email : "user1@example.com",
-      date : new Date("2025-03-23T12:00:00Z"),
+  useEffect(() => {
+    async function fetchData() {
+      const res = await fetch("/api/nutrition-condition/get"); // Call the API route
+      const data = await res.json();
+      setChartData({
+        labels: ["Carbohydrate", "Protein", "Fat", "Vitamin"],
+        datasets: [
+          {
+            label: "Nutrient Breakdown",
+            data: [data.carbohydrate, data.protein, data.fat, data.vitamin],
+            backgroundColor: ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"],
+          },
+        ],
+      });
+
+      // set user data
+      const user = await (await fetch("/api/users/get")).json();
+      setUserData(user);
+
+      //  Fetch activity data
+      const activity = await (await fetch("/api/activities/get")).json();
+      setActivityData(activity);
     }
-  })
+    fetchData();
+  }, []);
 
-  // get the activity of the user
+
+  const COLORS = ["#0088FE", "#00C49F", "#FFBB28", "#FF8042"];
 
   return (
     // main container
-      <main className="flex justify-center bg-fixed bg-[#C7F9CC]">
+      <main className="relative flex justify-center bg-fixed bg-[#C7F9CC]">
+      <Image
+          src={OrnamentTop}
+          width={360}
+          height={0}
+          alt="OrnamentTop"
+          className="fixed top-0  h-auto " // Move to the background
+        />
+        <Image
+          src={OrnamentBottom}
+          width={360}
+          height={0}
+          alt="OrnamentBottom"
+          className="fixed bottom-0  h-auto " // Move to the background
+        />
+
+        
         {/* main container */}
-        <div className="justify-center items-center h-[800px] w-[360px] border-2 border-solid border-black">
+        <div className="relative justify-center items-center h-[800px] w-[360px] ">
 
           {/* back arrow */}
           <div className="p-2">
@@ -47,7 +97,7 @@ export default async function Home() {
 
           {/* heading and profile */}
           <div className="flex justify-between items-center p-2">
-            <div>
+            <div className="text-lg p-2 font-sans text-[#21577A] font-bold">
               Hi, {userData?.username}
             </div>
 
@@ -59,72 +109,235 @@ export default async function Home() {
                 height = {42}
               />
             </div>
-
           </div>
 
           {/* charts */}
-          <div>
+          <div className="flex w-full p-2 h-[40%] justify-center items-center">
+            {/* charts + legends*/}
+            <div>
+              {chartData ? <Pie data={chartData} /> : <p>Loading chart...</p>}
 
+            </div>
           </div>
 
           {/* menus */}
-          <div>
+          <div className="flex justify-center items-center">
             {/* tambah hobi */}
+            <div className="justify-center items-center bg-[#89CFAE] rounded-md m-2">
+              {/* icon */}
+              <div className="flex justify-center items-center p-1  ">
+                <Image
+                  src={TambahHobiIcon}
+                  alt="Tambah Hobi"
+                  width={30}
+                  height={30}
+                />
+              </div>
+
+              <div className="text-[0.9rem] flex justify-center items-center text-center font-sans text-[#21577A] font-bold">
+                Tambah Hobi
+              </div>
+
+            </div>
+
 
             {/* cek mental harian */}
+            <div className="justify-center items-center bg-[#89CFAE] rounded-md m-2">
+              {/* icon */}
+              <div className="flex justify-center items-center p-1  ">
+                <Image
+                  src={TambahHobiIcon}
+                  alt="Tambah Hobi"
+                  width={30}
+                  height={30}
+                />
+              </div>
+
+              <div className="text-[0.9rem] flex justify-center items-center text-center font-sans text-[#21577A] font-bold">
+                Tambah Hobi
+              </div>
+
+            </div>
 
             {/* leaderboard */}
+            <div className="justify-center items-center bg-[#89CFAE] rounded-md m-2">
+              {/* icon */}
+              <div className="flex justify-center items-center p-1  ">
+                <Image
+                  src={TambahHobiIcon}
+                  alt="Tambah Hobi"
+                  width={30}
+                  height={30}
+                />
+              </div>
+
+              <div className="text-[0.9rem] flex justify-center items-center text-center font-sans text-[#21577A] font-bold">
+                Tambah Hobi
+              </div>
+
+            </div>
 
             {/* pop quiz */}
+            <div className="justify-center items-center bg-[#89CFAE] rounded-md m-2">
+              {/* icon */}
+              <div className="flex justify-center items-center p-1  ">
+                <Image
+                  src={TambahHobiIcon}
+                  alt="Tambah Hobi"
+                  width={30}
+                  height={30}
+                />
+              </div>
 
+              <div className="text-[0.9rem] flex justify-center items-center text-center font-sans text-[#21577A] font-bold">
+                Tambah Hobi
+              </div>
+            </div>
           </div>
 
           {/* acitivities and heading*/}
           <div>
             {/* heading */}
-            <div className="font-sans px-[5%] text-[#21577A] font-bold">
+            <div className="font-sans px-2 text-lg text-[#21577A] font-bold">
               Activities
             </div>
 
             {/* activities */}
-            <div className="grid grid-cols-5 gap-4">
+            <div className="p-2">
+
               {/* act 1*/}
-              <div className="flex justify-center w-full">
+              <div className="flex justify-center w-full bg-[#89CFAE] p-2 rounded-lg my-1">
                 {/* Lari pagi */}
-                <div className="w-[75%] flex justify-center items-start">
-                  Lari pagi
+                <div className="w-[75%] flex justify-between items-center">
+                  {activityData?.activityName}
                 </div>
 
                 {/* coin */}
-                <div>
+                <div className="flex justify-center items-center">
                   {/* value */}
-                  <div className="text-[#21577A]">
-                    100
+                  <div className="text-[#21577A] p-2 font-bold font-sans">
+                    {activityData?.coin}
                   </div>
                   {/* coin image */}
+                  <div>
+                    <Image
+                      src = {Coin}
+                      alt="Coin"
+                      width={30}
+                      height={30}
+                    />
+                  </div>
                   
                 </div>
               </div>
 
               {/* act 2 */}
-              <div>
+              <div className="flex justify-center w-full bg-[#89CFAE] p-2 rounded-lg my-1">
+                {/* Lari pagi */}
+                <div className="w-[75%] flex justify-between items-center">
+                  {activityData?.activityName}
+                </div>
 
+                {/* coin */}
+                <div className="flex justify-center items-center">
+                  {/* value */}
+                  <div className="text-[#21577A] p-2 font-bold font-sans">
+                    {activityData?.coin}
+                  </div>
+                  {/* coin image */}
+                  <div>
+                    <Image
+                      src = {Coin}
+                      alt="Coin"
+                      width={30}
+                      height={30}
+                    />
+                  </div>
+                  
+                </div>
               </div>
+
 
               {/* act 3 */}
-              <div>
+              <div className="flex justify-center w-full bg-[#89CFAE] p-2 rounded-lg my-1">
+                {/* Lari pagi */}
+                <div className="w-[75%] flex justify-between items-center">
+                  {activityData?.activityName}
+                </div>
 
+                {/* coin */}
+                <div className="flex justify-center items-center">
+                  {/* value */}
+                  <div className="text-[#21577A] p-2 font-bold font-sans">
+                    {activityData?.coin}
+                  </div>
+                  {/* coin image */}
+                  <div>
+                    <Image
+                      src = {Coin}
+                      alt="Coin"
+                      width={30}
+                      height={30}
+                    />
+                  </div>
+                  
+                </div>
               </div>
+
 
               {/* act 4 */}
-              <div>
+              <div className="flex justify-center w-full bg-[#89CFAE] p-2 rounded-lg my-1">
+                {/* Lari pagi */}
+                <div className="w-[75%] flex justify-between items-center">
+                  {activityData?.activityName}
+                </div>
 
+                {/* coin */}
+                <div className="flex justify-center items-center">
+                  {/* value */}
+                  <div className="text-[#21577A] p-2 font-bold font-sans">
+                    {activityData?.coin}
+                  </div>
+                  {/* coin image */}
+                  <div>
+                    <Image
+                      src = {Coin}
+                      alt="Coin"
+                      width={30}
+                      height={30}
+                    />
+                  </div>
+                  
+                </div>
               </div>
+
 
               {/* act 5 */}
-              <div>
+              <div className="flex justify-center w-full bg-[#89CFAE] p-2 rounded-lg my-1">
+                {/* Lari pagi */}
+                <div className="w-[75%] flex justify-between items-center">
+                  {activityData?.activityName}
+                </div>
 
+                {/* coin */}
+                <div className="flex justify-center items-center">
+                  {/* value */}
+                  <div className="text-[#21577A] p-2 font-bold font-sans">
+                    {activityData?.coin}
+                  </div>
+                  {/* coin image */}
+                  <div>
+                    <Image
+                      src = {Coin}
+                      alt="Coin"
+                      width={30}
+                      height={30}
+                    />
+                  </div>
+                  
+                </div>
               </div>
+
             </div>
           </div>
         </div>

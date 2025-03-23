@@ -4,7 +4,12 @@ import { prisma } from "../../../../../lib/prisma";
 
 export async function GET() {
   try {
-    const users = await prisma.user.findMany();
+    const users = await prisma.user.findUnique({
+      where: {
+        username: "user1",
+        email: "user1@example.com",
+        },
+    });
     return NextResponse.json(users, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: "Failed to fetch users" }, { status: 500 });
