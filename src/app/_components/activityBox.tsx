@@ -4,6 +4,7 @@ interface ActivityBoxProps {
   activity?: string;
   finishedDate?: string;
   coin?: number;
+  date?: Date;
 }
 
 const ActivityBox : React.FC<ActivityBoxProps> = ({ activity, finishedDate, coin }) => {

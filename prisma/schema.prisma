@@ -27,7 +27,7 @@ model Activity {
   coin          Int
   habitName     String
   activityPicture String?
-  finishedDate  DateTime?
+  date  DateTime?
 }
 
 model KondisiMental {

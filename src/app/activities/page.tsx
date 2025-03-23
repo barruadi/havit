@@ -2,6 +2,8 @@
 import { useState, useEffect, useCallback } from "react";
 // import { useSession } from "next-auth/react"; ini untuk tau session user
 import ActivityBox from "../_components/activityBox";
+import { useRouter } from "next/navigation";
+import Link from "next/link"
 
 const fetchActivities = async (page: number) => {
   // data dummy
@@ -31,6 +33,7 @@ export default function Activities() {
   const [activities, setActivities] = useState<any[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const router = useRouter();
 
   const username = "test";
 
@@ -63,6 +66,16 @@ export default function Activities() {
     setTotalPages(Math.ceil(activities.length / 7));
   }, [activities]);
 
+  const handleActivityClick = (activityId: string) => {
+    showAlert(activityId);
+    console.log("Clicked activity with ID:", activityId);
+    router.push(`/activities/${activityId}`);
+  };
+
+  const showAlert = (id: string) => {
+    alert("Clicked activity with ID:" + id);
+  };
+
   const handleNextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -82,13 +95,14 @@ export default function Activities() {
       </div>
 
       <div>
-        {activities.map((activity, index) => (
+        {activities.map((activity) => (
+        <a key={activity.id} onClick={() => handleActivityClick(activity.id)}>
           <ActivityBox
-            key={index}
             activity={activity.activityName}
-            date={activity.finishedDate}
+            date={activity.date}
             coin={activity.coin}
           />
+          </a>
         ))}
       </div>
 
