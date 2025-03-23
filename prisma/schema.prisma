@@ -19,13 +19,15 @@ model User {
 }
 
 model Activity {
-  username      String    @unique
-  email         String    @unique
+  id            Int      @id @default(autoincrement())
+  username      String    
+  email         String    
   activityName  String
   status        String
   coin          Int
   habitName     String
-  activityPicture Bytes         
+  activityPicture String?
+  finishedDate  DateTime?
 }
 
 model KondisiMental {

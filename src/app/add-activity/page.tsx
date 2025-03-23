@@ -13,6 +13,35 @@ export default function AddActivity() {
     image: null, 
   });
 
+  // belom beres
+  const handleAddActivity = async () => {
+    const formData = new FormData();
+    formData.append('activity', activityData.activity);
+    formData.append('coin', activityData.coin.toString());
+    
+    if (activityData.image) {
+      formData.append('image', activityData.image);
+    }
+  
+    try {
+      const response = await fetch("/api/activities/create", {
+        method: "POST",
+        body: formData, 
+      });
+  
+      const data = await response.json();
+      
+      if (response.ok) {
+        console.log("Activity added successfully:", data);
+        alert('Activity added successfully!');
+      } else {
+        console.error("Failed to add activity:", data.message);
+      }
+    } catch (error) {
+      console.error("Error adding activity:", error);
+    }
+  };  
+
   useEffect(() => {
     const fetchData = async () => {
       const data = {
